@@ -2,6 +2,13 @@
 
 A three-tier containerized web application for browsing, rating, and submitting dad jokes.
 
+## Added Features (Lab Requirement)
+
+I added the pgAdmin service to this app, which provides developers with a way to view their PostgreSQL database in a clear GUI. This simplifies the chore of editing the database by allowing developers to interact directly with the database without needing the command line.
+
+For an extra feature, I added a list of "Top Dad Jokes" above the complete list of dad jokes found in the "Browse" view. I made this list scroll horizontally to distinguish it from the list underneath. This list is simply the jokes that are randomly told the most, using the "times_told" attribute and ordered from greatest to least. 
+
+
 ## Architecture
 
 ```

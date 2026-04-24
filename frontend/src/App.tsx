@@ -23,6 +23,7 @@ const API_BASE = "/api";
 export default function App() {
   const [joke, setJoke] = useState<Joke | null>(null);
   const [allJokes, setAllJokes] = useState<Joke[]>([]);
+  const [popularJokes, setPopularJokes] = useState<Joke[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [showPunchline, setShowPunchline] = useState(false);
@@ -75,9 +76,19 @@ export default function App() {
       .catch(console.error);
   }, [selectedCategory]);
 
+  const fetchPopular = useCallback(() => {
+  fetch(`${API_BASE}/jokes/popular`)
+    .then((r) => r.json())
+    .then(setPopularJokes)
+    .catch(console.error);
+  }, []);
+
   useEffect(() => {
-    if (view === "browse") fetchAll();
-  }, [view, fetchAll]);
+  if (view === "browse") {
+    fetchAll();
+    fetchPopular();
+  }
+  }, [view, fetchAll, fetchPopular]);
 
   // --- Submit new joke ---
   const handleSubmit = () => {
@@ -213,6 +224,51 @@ export default function App() {
         {/* ---- BROWSE VIEW ---- */}
         {view === "browse" && (
           <div>
+            <h2 style={{ color: "#facc15", marginBottom: "0.75rem" }}>
+              ⭐ Top Dad Jokes
+            </h2>
+
+        {/* {popularJokes.map((j) => (
+              <div key={j.id} style={styles.listCard}>
+                <p style={styles.setup}>{j.setup}</p>
+                <p style={styles.punchline}>{j.punchline}</p>
+                <div style={styles.meta}>
+                  <span style={styles.badge}>{j.category}</span>
+                  <span style={{ fontSize: "0.8rem", color: "#aaa" }}>
+                    ★ {Number(j.rating).toFixed(1)} · Told {j.times_told}×
+                  </span>
+                </div>
+              </div>
+            ))} */}   
+
+            <p style={{ color: "#94a3b8", fontSize: "0.85rem", marginBottom: "0.75rem" }}>
+              Most popular jokes right now
+            </p>
+
+          <div style={styles.breakout}>
+            <div style={styles.horizontalScroll}>
+              {popularJokes.map((j) => (
+                <div key={j.id} style={styles.featuredCard}>
+                  <p style={styles.setup}>{j.setup}</p>
+                  <p style={styles.punchline}>{j.punchline}</p>
+
+                  <div style={styles.meta}>
+                    <span style={styles.badge}>⭐ Top</span>
+                    <span style={{ fontSize: "0.8rem", color: "#aaa" }}>
+                      ★ {Number(j.rating).toFixed(1)} · Told {j.times_told}×
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+            <hr style={styles.divider} />
+
+            <h2 style={{ color: "#94a3b8", marginTop: "1rem" }}>
+              📖 All Jokes
+            </h2>
+
             <div style={styles.filterRow}>
               <label style={{ color: "#ccc" }}>Filter: </label>
               <select
@@ -305,6 +361,33 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: "center",
     margin: 0,
     padding: 0,
+  },
+  breakout: {
+    width: "calc(100% + 200px)",  // expand beyond container
+    marginLeft: "-100px",
+    padding: "0 1rem",           // keeps spacing on edges
+  },
+  horizontalScroll: {
+    display: "flex",
+    gap: "0.75rem",
+    overflowX: "auto",
+    paddingBottom: "0.5rem",
+    marginBottom: "1.5rem",
+    scrollbarWidth: "none", // Firefox
+  },
+  featuredCard: {
+    minWidth: "420px", // key for horizontal layout
+    flexShrink: 0,     // prevents shrinking
+    background: "linear-gradient(135deg, #16213e, #1f2a4a)",
+    border: "1px solid #facc15",
+    borderRadius: 10,
+    padding: "1rem",
+    boxShadow: "0 0 10px rgba(250, 204, 21, 0.2)",
+  },
+  divider: {
+    border: "none",
+    borderTop: "1px solid #334155",
+    margin: "1rem 0",
   },
   header: {
     textAlign: "center",

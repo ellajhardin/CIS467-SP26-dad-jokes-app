@@ -93,6 +93,23 @@ app.get("/api/jokes", async (req: Request, res: Response) => {
   }
 });
 
+// --- GET /api/jokes/popular –------------------------------
+app.get("/api/jokes/popular", async (_req: Request, res: Response) => {
+  try {
+    const result = await pool.query(
+      `SELECT *
+       FROM jokes
+       ORDER BY times_told DESC
+       LIMIT 5`
+    );
+
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch popular jokes" });
+  }
+});
+
 // --- GET /api/jokes/random – one random joke ------------------------------
 app.get("/api/jokes/random", async (_req: Request, res: Response) => {
   try {
